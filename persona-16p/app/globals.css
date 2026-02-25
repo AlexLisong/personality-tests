@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+@theme {
+  /* 16personalities color system */
+  --color-purple: #88619A;
+  --color-purple-light: #F3EFF5;
+  --color-purple-mid: #B7A0C2;
+  --color-green: #33A474;
+  --color-green-light: #EBF6F1;
+  --color-green-mid: #84C8AB;
+  --color-blue: #4298B4;
+  --color-blue-light: #ECF4F7;
+  --color-blue-mid: #8DC1D2;
+  --color-yellow: #E4AE3A;
+  --color-yellow-light: #FCF7EB;
+  --color-yellow-mid: #EED088;
+
+  /* Text colors */
+  --color-text: #343C4B;
+  --color-text-mid: #51596A;
+  --color-text-dim: #68707F;
+  --color-text-muted: #ABAFB8;
+
+  /* Surface */
+  --color-bg: #FFFFFF;
+  --color-bg-soft: #F6F6F7;
+  --color-border: #DDDFE2;
+  --color-border-light: #EEEFF1;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(29, 36, 50, 0.06);
+  --shadow-md: 0 4px 20px rgba(29, 36, 50, 0.08);
+  --shadow-lg: 0 10px 40px rgba(29, 36, 50, 0.1);
+  --shadow-xl: 0 20px 60px rgba(29, 36, 50, 0.12);
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 40px;
+}
+
+/* Smooth page transitions */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+/* Decorative dot pattern */
+.dot-pattern {
+  background-image: radial-gradient(circle, var(--color-border) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Scale circle styles */
+.scale-circle {
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+.scale-circle:hover {
+  transform: scale(1.15);
+}
+
+/* Shimmer loading */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, transparent 30%, rgba(136, 97, 154, 0.08) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Progress segments */
+.progress-segment {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Pill button */
+.btn-pill {
+  border-radius: var(--radius-pill);
+  font-weight: 550;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+.btn-pill:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.btn-pill:active {
+  transform: translateY(0);
+}
