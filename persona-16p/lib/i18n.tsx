@@ -12,12 +12,17 @@ interface I18nContext {
 
 const Ctx = createContext<I18nContext>({ lang: "en", toggle: () => {}, t: (en) => en });
 
+const defer = (cb: () => void) => {
+  if (typeof queueMicrotask === "function") queueMicrotask(cb);
+  else setTimeout(cb, 0);
+};
+
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLang] = useState<Lang>("en");
 
   useEffect(() => {
     const saved = localStorage.getItem("tq-lang") as Lang | null;
-    if (saved === "en" || saved === "zh") setLang(saved);
+    if (saved === "en" || saved === "zh") defer(() => setLang(saved));
   }, []);
 
   const toggle = useCallback(() => {

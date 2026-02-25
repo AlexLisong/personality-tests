@@ -7,13 +7,18 @@ interface ProgressBarProps {
   total: number;
 }
 
-// Segment colors from 16personalities palette
-const segmentColors = [
-  "#88619A", "#88619A", // EI - purple
-  "#E4AE3A", "#E4AE3A", // SN - yellow
-  "#33A474", "#33A474", // TF - green
-  "#4298B4", "#4298B4", // JP - blue
-  "#88619A", "#88619A", // AT - purple
+// Segment colors map to the dimension order used in the question list
+const segmentColors: string[] = [
+  "var(--dimension-ei-color)",
+  "var(--dimension-ei-color)",
+  "var(--dimension-sn-color)",
+  "var(--dimension-sn-color)",
+  "var(--dimension-tf-color)",
+  "var(--dimension-tf-color)",
+  "var(--dimension-jp-color)",
+  "var(--dimension-jp-color)",
+  "var(--dimension-at-color)",
+  "var(--dimension-at-color)",
 ];
 
 export default function ProgressBar({ current, total }: ProgressBarProps) {
@@ -28,7 +33,7 @@ export default function ProgressBar({ current, total }: ProgressBarProps) {
             transition={{ delay: i * 0.03, duration: 0.3 }}
             className="h-1.5 flex-1 rounded-full progress-segment origin-left"
             style={{
-              backgroundColor: i < current ? segmentColors[i] : "var(--color-border-light)",
+              backgroundColor: i < current ? segmentColors[i] ?? "var(--color-purple)" : "var(--color-border-light)",
               opacity: i < current ? 1 : 0.5,
             }}
           />

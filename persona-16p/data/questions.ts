@@ -10,11 +10,11 @@ export interface Question {
 
 // Color group for each dimension (matches 16personalities)
 export const dimensionColors: Record<Dimension, { color: string; colorLight: string; label: string; labelZh: string }> = {
-  EI: { color: "#88619A", colorLight: "#F3EFF5", label: "Mind", labelZh: "精力" },
-  SN: { color: "#E4AE3A", colorLight: "#FCF7EB", label: "Energy", labelZh: "认知" },
-  TF: { color: "#33A474", colorLight: "#EBF6F1", label: "Nature", labelZh: "本性" },
-  JP: { color: "#4298B4", colorLight: "#ECF4F7", label: "Tactics", labelZh: "策略" },
-  AT: { color: "#88619A", colorLight: "#F3EFF5", label: "Identity", labelZh: "身份" },
+  EI: { color: "var(--dimension-ei-color)", colorLight: "var(--dimension-ei-color-light)", label: "Mind", labelZh: "精力" },
+  SN: { color: "var(--dimension-sn-color)", colorLight: "var(--dimension-sn-color-light)", label: "Energy", labelZh: "认知" },
+  TF: { color: "var(--dimension-tf-color)", colorLight: "var(--dimension-tf-color-light)", label: "Nature", labelZh: "本性" },
+  JP: { color: "var(--dimension-jp-color)", colorLight: "var(--dimension-jp-color-light)", label: "Tactics", labelZh: "策略" },
+  AT: { color: "var(--dimension-at-color)", colorLight: "var(--dimension-at-color-light)", label: "Identity", labelZh: "身份" },
 };
 
 const questions: Question[] = [

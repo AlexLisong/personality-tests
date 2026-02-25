@@ -11,10 +11,10 @@ export interface PersonalityType {
 }
 
 const groupColors = {
-  analyst: { bg: "from-purple to-purple-mid", color: "#88619A" },
-  diplomat: { bg: "from-green to-green-mid", color: "#33A474" },
-  sentinel: { bg: "from-blue to-blue-mid", color: "#4298B4" },
-  explorer: { bg: "from-yellow to-yellow-mid", color: "#E4AE3A" },
+  analyst: { bg: "from-purple to-purple-mid", color: "var(--group-analyst-color)" },
+  diplomat: { bg: "from-green to-green-mid", color: "var(--group-diplomat-color)" },
+  sentinel: { bg: "from-blue to-blue-mid", color: "var(--group-sentinel-color)" },
+  explorer: { bg: "from-yellow to-yellow-mid", color: "var(--group-explorer-color)" },
 };
 
 export { groupColors };

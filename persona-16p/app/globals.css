@@ -41,6 +41,66 @@
   --radius-pill: 40px;
 }
 
+:root {
+  /* Dimension palettes */
+  --dimension-ei-color: #88619A;
+  --dimension-ei-color-light: #F3EFF5;
+  --dimension-sn-color: #E4AE3A;
+  --dimension-sn-color-light: #FCF7EB;
+  --dimension-tf-color: #33A474;
+  --dimension-tf-color-light: #EBF6F1;
+  --dimension-jp-color: #4298B4;
+  --dimension-jp-color-light: #ECF4F7;
+  --dimension-at-color: #88619A;
+  --dimension-at-color-light: #F3EFF5;
+
+  /* Result group palettes */
+  --group-analyst-color: #88619A;
+  --group-diplomat-color: #33A474;
+  --group-sentinel-color: #4298B4;
+  --group-explorer-color: #E4AE3A;
+}
+
+[data-theme="tingdaer"] {
+  --color-text: #1A2439;
+  --color-text-mid: #2F3A55;
+  --color-text-dim: #475475;
+  --color-text-muted: #7A86A5;
+  --color-bg: #F4F8FF;
+  --color-bg-soft: #E8F1FF;
+  --color-border: #D3DFF3;
+  --color-border-light: #E1EBFA;
+
+  --color-purple: #5B6DFF;
+  --color-purple-light: #E8ECFF;
+  --color-purple-mid: #9EA8FF;
+  --color-green: #1FC6A6;
+  --color-green-light: #D9FBF1;
+  --color-green-mid: #7FDCC4;
+  --color-blue: #1C9DE7;
+  --color-blue-light: #DFF2FF;
+  --color-blue-mid: #7DCBF6;
+  --color-yellow: #F4C064;
+  --color-yellow-light: #FFF3DA;
+  --color-yellow-mid: #F8D79F;
+
+  --dimension-ei-color: #5B6DFF;
+  --dimension-ei-color-light: #E8ECFF;
+  --dimension-sn-color: #2BB5FF;
+  --dimension-sn-color-light: #E1F6FF;
+  --dimension-tf-color: #1FC6A6;
+  --dimension-tf-color-light: #D9FBF1;
+  --dimension-jp-color: #1C9DE7;
+  --dimension-jp-color-light: #DFF2FF;
+  --dimension-at-color: #7A5CFF;
+  --dimension-at-color-light: #EEE9FF;
+
+  --group-analyst-color: #5B6DFF;
+  --group-diplomat-color: #1FC6A6;
+  --group-sentinel-color: #1C9DE7;
+  --group-explorer-color: #F4C064;
+}
+
 /* Smooth page transitions */
 html {
   scroll-behavior: smooth;

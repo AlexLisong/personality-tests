@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Figtree } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
+import { ThemeProvider } from "@/lib/theme";
 import LangToggle from "@/components/LangToggle";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -22,12 +24,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${bricolage.variable} ${figtree.variable}`}>
+    <html lang="en" data-theme="classic" className={`${bricolage.variable} ${figtree.variable}`}>
       <body className="font-[family-name:var(--font-body)] antialiased">
-        <I18nProvider>
-          <LangToggle />
-          {children}
-        </I18nProvider>
+        <ThemeProvider>
+          <I18nProvider>
+            <LangToggle />
+            <ThemeToggle />
+            {children}
+          </I18nProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import questions from "@/data/questions";
-import { getSessionId } from "@/lib/session";
-import { useLang } from "@/lib/i18n";
-import QuestionCard from "@/components/QuestionCard";
+import { dimensionColors } from "@/data/questions";
 import ProgressBar from "@/components/ProgressBar";
-import type { Answers } from "@/lib/scoring";
+import QuestionCard from "@/components/QuestionCard";
+import { getSessionId, clearSession } from "@/lib/session";
+import { useLang } from "@/lib/i18n";
 
 const encouragements = [
   { en: "Great start!", zh: "好的开始！" },
@@ -18,88 +18,82 @@ const encouragements = [
   { en: "Last stretch!", zh: "最后冲刺！" },
 ];
 
-function getEncouragement(index: number, total: number) {
-  const pct = index / total;
-  if (pct < 0.2) return encouragements[0];
-  if (pct < 0.4) return encouragements[1];
-  if (pct < 0.6) return encouragements[2];
-  if (pct < 0.8) return encouragements[3];
-  return encouragements[4];
-}
+const defer = (cb: () => void) => {
+  if (typeof queueMicrotask === "function") queueMicrotask(cb);
+  else setTimeout(cb, 0);
+};
 
 export default function TestPage() {
   const router = useRouter();
   const { t } = useLang();
   const [current, setCurrent] = useState(0);
-  const [answers, setAnswers] = useState<Answers>({});
-  const [showEncouragement, setShowEncouragement] = useState(false);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [showCongrats, setShowCongrats] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
-  // Load saved progress
   useEffect(() => {
     const sid = getSessionId();
-    if (!sid) { setLoaded(true); return; }
+    if (!sid) {
+      defer(() => setLoaded(true));
+      return;
+    }
 
     fetch(`/api/progress?sid=${sid}`)
       .then((r) => r.json())
       .then((data) => {
-        if (data.answers && Object.keys(data.answers).length > 0) {
-          setAnswers(data.answers);
-          // Resume from the first unanswered question
-          const answered = new Set(Object.keys(data.answers).map(Number));
-          const next = questions.findIndex((q) => !answered.has(q.id));
-          if (next === -1) {
-            router.push("/result");
-          } else {
-            setCurrent(next);
-          }
-        }
+        if (!data.answers || Object.keys(data.answers).length === 0) return;
+        setAnswers(data.answers);
+        const answeredIds = new Set(Object.keys(data.answers).map(Number));
+        const nextIndex = questions.findIndex((q) => !answeredIds.has(q.id));
+        if (nextIndex === -1) router.push("/result");
+        else setCurrent(nextIndex);
       })
-      .catch(() => {})
-      .finally(() => setLoaded(true));
+      .finally(() => setLoaded(true))
+      .catch(() => setLoaded(true));
   }, [router]);
 
-  const saveProgress = useCallback((newAnswers: Answers) => {
+  const saveProgress = useCallback((payload: Record<number, number>) => {
     const sid = getSessionId();
     if (!sid) return;
     fetch("/api/progress", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ sid, answers: newAnswers }),
+      body: JSON.stringify({ sid, answers: payload }),
     }).catch(() => {});
   }, []);
 
   const handleAnswer = useCallback(
-    (_qid: number, value: number) => {
-      const q = questions[current];
-      const newAnswers = { ...answers, [q.id]: value };
-      setAnswers(newAnswers);
-      saveProgress(newAnswers);
+    (questionId: number, value: number) => {
+      const updated = { ...answers, [questionId]: value };
+      setAnswers(updated);
+      saveProgress(updated);
 
-      // Show encouragement at milestones
-      const nextIdx = current + 1;
-      if (nextIdx % 3 === 0 && nextIdx < questions.length) {
-        setShowEncouragement(true);
+      const nextIndex = current + 1;
+      if ((nextIndex % 3 === 0 && nextIndex < questions.length) || nextIndex === questions.length) {
+        setShowCongrats(true);
         setTimeout(() => {
-          setShowEncouragement(false);
-          if (nextIdx >= questions.length) {
-            router.push("/result");
-          } else {
-            setCurrent(nextIdx);
-          }
+          setShowCongrats(false);
+          if (nextIndex >= questions.length) router.push("/result");
+          else setCurrent(nextIndex);
         }, 1200);
       } else {
         setTimeout(() => {
-          if (nextIdx >= questions.length) {
-            router.push("/result");
-          } else {
-            setCurrent(nextIdx);
-          }
+          if (nextIndex >= questions.length) router.push("/result");
+          else setCurrent(nextIndex);
         }, 350);
       }
     },
-    [current, answers, saveProgress, router]
+    [answers, current, router, saveProgress]
   );
+
+  const encouragement = useMemo(() => {
+    const progress = current / questions.length;
+    if (progress < 0.2) return encouragements[0];
+    if (progress < 0.4) return encouragements[1];
+    if (progress < 0.6) return encouragements[2];
+    if (progress < 0.8) return encouragements[3];
+    return encouragements[4];
+  }, [current]);
 
   if (!loaded) {
     return (
@@ -110,61 +104,46 @@ export default function TestPage() {
   }
 
   const question = questions[current];
-  const enc = getEncouragement(current, questions.length);
+  const dimensionColor = question ? dimensionColors[question.dimension] : null;
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-12">
-      {/* Progress */}
       <div className="w-full max-w-2xl mb-10">
         <ProgressBar current={current} total={questions.length} />
       </div>
 
-      {/* Encouragement overlay */}
-      <AnimatePresence>
-        {showEncouragement && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="fixed inset-0 z-40 flex items-center justify-center bg-white/80 backdrop-blur-sm"
-          >
-            <div className="text-center">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ type: "spring", stiffness: 300, damping: 15 }}
-                className="text-5xl mb-4"
-              >
-                ✨
-              </motion.div>
-              <p className="font-[family-name:var(--font-display)] text-2xl font-bold text-[var(--color-purple)]">
-                {t(enc.en, enc.zh)}
-              </p>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {showCongrats && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          className="fixed inset-0 z-40 flex items-center justify-center bg-white/80 backdrop-blur-sm"
+        >
+          <div className="text-center">
+            <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-5xl mb-4">
+              ✨
+            </motion.div>
+            <p className="font-[family-name:var(--font-display)] text-2xl font-bold" style={{ color: "var(--color-purple)" }}>
+              {t(encouragement.en, encouragement.zh)}
+            </p>
+          </div>
+        </motion.div>
+      )}
 
-      {/* Question */}
-      <QuestionCard
-        question={question}
-        index={current}
-        total={questions.length}
-        selectedValue={answers[question.id]}
-        onAnswer={handleAnswer}
-      />
+      {question && (
+        <QuestionCard
+          key={question.id}
+          question={question}
+          step={current + 1}
+          total={questions.length}
+          selectedValue={answers[question.id]}
+          onAnswer={handleAnswer}
+          accent={dimensionColor}
+        />
+      )}
 
-      {/* Navigation hint */}
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="mt-10 text-[var(--color-text-muted)] text-sm"
-      >
-        {t(
-          "Select a circle to respond and move forward",
-          "选择一个圆圈来作答并继续"
-        )}
+      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-10 text-[var(--color-text-muted)] text-sm">
+        {t("Select a circle to respond and move forward", "选择一个圆圈来作答并继续")}
       </motion.p>
     </main>
   );
