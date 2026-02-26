@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, useCallback } from "react";
 import questions from "@/data/questions";
-import { dimensionColors } from "@/data/questions";
 import ProgressBar from "@/components/ProgressBar";
 import QuestionCard from "@/components/QuestionCard";
 import { getSessionId, clearSession } from "@/lib/session";
@@ -104,7 +103,6 @@ export default function TestPage() {
   }
 
   const question = questions[current];
-  const dimensionColor = question ? dimensionColors[question.dimension] : null;
 
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-12">
@@ -134,11 +132,10 @@ export default function TestPage() {
         <QuestionCard
           key={question.id}
           question={question}
-          step={current + 1}
+          index={current}
           total={questions.length}
           selectedValue={answers[question.id]}
           onAnswer={handleAnswer}
-          accent={dimensionColor}
         />
       )}
 
