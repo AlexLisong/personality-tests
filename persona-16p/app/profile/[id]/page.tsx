@@ -49,7 +49,7 @@ export default function UserProfilePage() {
   return (
     <AuthGuard>
       <TopBar title={profile?.displayName ?? t("Profile", "资料")} showBack />
-      <main className="max-w-lg mx-auto px-4 py-6">
+      <main className="px-4 py-6">
         {loading && <div className="py-16"><LoadingSpinner /></div>}
         {!loading && !profile && (
           <p className="text-center text-[var(--color-text-dim)] py-16">{t("User not found", "用户不存在")}</p>

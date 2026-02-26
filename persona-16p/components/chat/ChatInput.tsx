@@ -22,8 +22,8 @@ export default function ChatInput({ onSend }: ChatInputProps) {
   };
 
   return (
-    <div className="sticky bottom-0 bg-[var(--color-bg)] border-t border-[var(--color-border-light)] px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
-      <div className="flex gap-2 max-w-lg mx-auto">
+    <div className="sticky bottom-0 bg-[var(--color-bg)] border-t border-[var(--color-border-light)] px-4 py-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] lg:pb-3">
+      <div className="flex gap-2">
         <input
           value={content}
           onChange={(e) => setContent(e.target.value)}

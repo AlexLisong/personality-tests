@@ -50,7 +50,7 @@ export default function BottomNav() {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--color-bg)] border-t border-[var(--color-border-light)] pb-[env(safe-area-inset-bottom)]">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-[var(--color-bg)] border-t border-[var(--color-border-light)] pb-[env(safe-area-inset-bottom)] lg:hidden">
       <div className="flex items-center justify-around h-14 max-w-lg mx-auto">
         {items.map((item) => {
           const active = isActive(item);

@@ -30,7 +30,7 @@ export default function CourseDetailPage() {
   return (
     <AuthGuard>
       <TopBar title={course ? t(course.title, course.titleZh) : t("Course", "课程")} showBack />
-      <main className="max-w-lg mx-auto px-4 py-6">
+      <main className="px-4 py-6">
         {loading && <div className="py-16"><LoadingSpinner /></div>}
 
         {course && (

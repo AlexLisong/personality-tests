@@ -25,7 +25,7 @@ export default function CoursesPage() {
   return (
     <AuthGuard>
       <TopBar title={t("Courses", "课程")} />
-      <main className="max-w-lg mx-auto px-4 py-6">
+      <main className="px-4 py-6">
         {loading && <div className="py-16"><LoadingSpinner /></div>}
 
         {data && (

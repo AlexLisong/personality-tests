@@ -42,7 +42,7 @@ export default function ChatListPage() {
   return (
     <AuthGuard>
       <TopBar title={t("Messages", "消息")} />
-      <main className="max-w-lg mx-auto">
+      <main>
         {loading && <div className="py-16"><LoadingSpinner /></div>}
 
         {!loading && conversations.length === 0 && (

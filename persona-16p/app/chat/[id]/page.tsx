@@ -63,7 +63,7 @@ export default function ChatPage() {
         showBack
         action={otherUser ? <PersonalityHeader user={otherUser} /> : undefined}
       />
-      <main className="flex flex-col h-[calc(100vh-3rem)] max-w-lg mx-auto">
+      <main className="flex flex-col h-[calc(100vh-3rem)]">
         <div className="flex-1 overflow-y-auto px-4 py-4">
           {loading && <div className="py-16"><LoadingSpinner /></div>}
           {messages.map((msg) => (

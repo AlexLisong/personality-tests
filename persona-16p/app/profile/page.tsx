@@ -19,7 +19,7 @@ export default function MyProfilePage() {
   return (
     <AuthGuard>
       <TopBar title={t("My Profile", "我的")} />
-      <main className="max-w-lg mx-auto px-4 py-6">
+      <main className="px-4 py-6">
         {user && !editing && (
           <>
             <ProfileCard user={user} />

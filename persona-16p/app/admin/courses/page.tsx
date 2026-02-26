@@ -76,7 +76,7 @@ export default function AdminCoursesPage() {
           </button>
         }
       />
-      <main className="max-w-lg mx-auto px-4 py-6">
+      <main className="px-4 py-6">
         {loading && <div className="py-16"><LoadingSpinner /></div>}
 
         {showForm && data && (

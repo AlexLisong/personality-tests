@@ -70,7 +70,7 @@ export default function FeedPage() {
   return (
     <AuthGuard>
       <TopBar title={t("Feed", "动态")} />
-      <main className="max-w-lg mx-auto px-4 py-4 space-y-4">
+      <main className="px-4 py-4 space-y-4">
         <PostComposer onPost={handlePost} />
 
         {loading && <div className="py-8"><LoadingSpinner /></div>}
