@@ -8,6 +8,7 @@ import questions from "@/data/questions";
 import personalities, { groupColors } from "@/data/personalities";
 import { calculateScores, getPersonalityCode } from "@/lib/scoring";
 import { getSessionId, clearSession } from "@/lib/session";
+import { useAuth } from "@/lib/auth-context";
 import { useLang } from "@/lib/i18n";
 import DimensionBar from "@/components/DimensionBar";
 import type { Answers, DimensionScore } from "@/lib/scoring";
@@ -15,8 +16,11 @@ import type { Answers, DimensionScore } from "@/lib/scoring";
 export default function ResultPage() {
   const router = useRouter();
   const { t } = useLang();
+  const { user, updateUser } = useAuth();
   const [scores, setScores] = useState<DimensionScore[] | null>(null);
   const [code, setCode] = useState("");
+  const [saved, setSaved] = useState(false);
+  const [shared, setShared] = useState(false);
 
   useEffect(() => {
     const sid = getSessionId();
@@ -39,6 +43,39 @@ export default function ResultPage() {
       })
       .catch(() => router.push("/"));
   }, [router]);
+
+  const handleSaveToProfile = async () => {
+    if (!user || !scores || !code) return;
+    const res = await fetch(`/api/users/${user.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ personalityCode: code, dimensionScores: scores }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      updateUser(data.user);
+      setSaved(true);
+    }
+  };
+
+  const handleShareToFeed = async () => {
+    if (!user || !scores || !code) return;
+    // First save to profile if not saved
+    if (!saved && !user.personalityCode) {
+      await handleSaveToProfile();
+    }
+    const personality = personalities[code];
+    const content = t(
+      `I just discovered I'm a ${code} - ${personality?.name ?? "Unknown"}! ${personality?.tagline ?? ""}`,
+      `我刚刚发现我是 ${code} - ${personality?.nameZh ?? "未知"}！${personality?.taglineZh ?? ""}`
+    );
+    const res = await fetch("/api/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content, type: "result_share" }),
+    });
+    if (res.ok) setShared(true);
+  };
 
   if (!scores) {
     return (
@@ -64,7 +101,7 @@ export default function ResultPage() {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", stiffness: 200, damping: 25 }}
-        className="w-full max-w-lg bg-white rounded-[var(--radius-xl)] border border-[var(--color-border-light)] shadow-[var(--shadow-lg)] overflow-hidden mb-10"
+        className="w-full max-w-lg bg-[var(--color-bg)] rounded-[var(--radius-xl)] border border-[var(--color-border-light)] shadow-[var(--shadow-lg)] overflow-hidden mb-10"
       >
         {/* Color header */}
         <div
@@ -126,25 +163,63 @@ export default function ResultPage() {
         </div>
       </div>
 
+      {/* Social actions (logged in users) */}
+      {user && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.0 }}
+          className="w-full max-w-lg mt-8 space-y-3"
+        >
+          {!saved && !user.personalityCode && (
+            <button
+              onClick={handleSaveToProfile}
+              className="btn-pill w-full px-6 py-3 text-sm text-white"
+              style={{ backgroundColor: gc.color }}
+            >
+              {t("Save to Profile", "保存到个人资料")}
+            </button>
+          )}
+          {saved && (
+            <p className="text-center text-sm text-[var(--color-green)] font-medium">
+              {t("Saved to your profile!", "已保存到个人资料！")}
+            </p>
+          )}
+          {!shared && (
+            <button
+              onClick={handleShareToFeed}
+              className="btn-pill w-full px-6 py-3 text-sm border border-[var(--color-border)] text-[var(--color-text-mid)] bg-[var(--color-bg)]"
+            >
+              {t("Share to Feed", "分享到动态")}
+            </button>
+          )}
+          {shared && (
+            <p className="text-center text-sm text-[var(--color-purple)] font-medium">
+              {t("Shared to feed!", "已分享到动态！")}
+            </p>
+          )}
+        </motion.div>
+      )}
+
       {/* Actions */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.2 }}
-        className="flex gap-4 mt-12"
+        className="flex gap-4 mt-8"
       >
         <button
           onClick={handleRetake}
-          className="btn-pill px-6 py-3 text-sm border border-[var(--color-border)] text-[var(--color-text-mid)] bg-white"
+          className="btn-pill px-6 py-3 text-sm border border-[var(--color-border)] text-[var(--color-text-mid)] bg-[var(--color-bg)]"
         >
           {t("Retake Test", "重新测试")}
         </button>
-        <Link href="/">
+        <Link href={user ? "/feed" : "/"}>
           <button
             className="btn-pill px-6 py-3 text-sm text-white"
             style={{ backgroundColor: gc.color }}
           >
-            {t("Back Home", "返回首页")}
+            {user ? t("Go to Feed", "进入动态") : t("Back Home", "返回首页")}
           </button>
         </Link>
       </motion.div>

@@ -3,6 +3,8 @@ node_modules/
 .progress/
 data/progress/*.json
 !data/progress/.gitkeep
+persona-16p/db/*.json
+!persona-16p/db/.gitkeep
 *.tsbuildinfo
 next-env.d.ts
 .DS_Store

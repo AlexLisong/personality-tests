@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useLang } from "@/lib/i18n";
+import { useAuth } from "@/lib/auth-context";
 import { dimensionColors } from "@/data/questions";
 
 const dims = ["EI", "SN", "TF", "JP", "AT"] as const;
@@ -13,8 +14,15 @@ const stepCards = [
   { step: 3, icon: "🔍", title: "Explore Results", titleZh: "探索结果", desc: "Understand your strengths across all five personality dimensions.", descZh: "了解你在五个人格维度上的优势。" },
 ];
 
+const platformFeatures = [
+  { icon: "💬", title: "Social Feed", titleZh: "社交动态", desc: "Share results and connect with others.", descZh: "分享结果，与他人连接。" },
+  { icon: "💕", title: "Personality Matching", titleZh: "人格匹配", desc: "Discover your compatibility with others.", descZh: "发现与他人的契合度。" },
+  { icon: "📚", title: "Growth Courses", titleZh: "成长课程", desc: "Learn to build better relationships.", descZh: "学习建立更好的关系。" },
+];
+
 export default function HomePage() {
   const { t } = useLang();
+  const { user, loading } = useAuth();
 
   return (
     <main className="min-h-screen flex flex-col items-center">
@@ -44,11 +52,15 @@ export default function HomePage() {
             })}
           </div>
 
-          <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-6xl font-extrabold text-[var(--color-text)] leading-tight mb-5">
+          <h1 className="font-[family-name:var(--font-display)] text-4xl md:text-6xl font-extrabold text-[var(--color-text)] leading-tight mb-3">
             {t("Discover Your", "发现你的")}
             <br />
             <span className="text-[var(--color-purple)]">{t("Personality Type", "人格类型")}</span>
           </h1>
+
+          <p className="text-[var(--color-text-dim)] text-sm mb-5">
+            {t("Learn first, then connect. Grow first, then meet.", "先学习，再连接；先成长，再相遇。")}
+          </p>
 
           <p className="text-[var(--color-text-mid)] text-lg md:text-xl max-w-xl mx-auto leading-relaxed mb-10">
             {t(
@@ -57,22 +69,100 @@ export default function HomePage() {
             )}
           </p>
 
-          <Link href="/test">
-            <motion.button
-              whileHover={{ scale: 1.04, y: -2 }}
-              whileTap={{ scale: 0.97 }}
-              className="btn-pill px-10 py-4 text-lg text-white"
-              style={{ backgroundColor: "var(--color-purple)" }}
-            >
-              {t("Take the Test", "开始测试")}
-            </motion.button>
-          </Link>
+          {/* Auth-aware CTAs */}
+          {!loading && (
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              {user ? (
+                <>
+                  {!user.personalityCode && (
+                    <Link href="/test">
+                      <motion.button
+                        whileHover={{ scale: 1.04, y: -2 }}
+                        whileTap={{ scale: 0.97 }}
+                        className="btn-pill px-10 py-4 text-lg text-white"
+                        style={{ backgroundColor: "var(--color-purple)" }}
+                      >
+                        {t("Take the Test", "开始测试")}
+                      </motion.button>
+                    </Link>
+                  )}
+                  <Link href="/feed">
+                    <motion.button
+                      whileHover={{ scale: 1.04, y: -2 }}
+                      whileTap={{ scale: 0.97 }}
+                      className={`btn-pill px-10 py-4 text-lg ${user.personalityCode ? "text-white" : "text-[var(--color-text-mid)] border border-[var(--color-border)] bg-white"}`}
+                      style={user.personalityCode ? { backgroundColor: "var(--color-purple)" } : {}}
+                    >
+                      {t("Go to Feed", "进入动态")}
+                    </motion.button>
+                  </Link>
+                  <Link href="/profile">
+                    <motion.button
+                      whileHover={{ scale: 1.04, y: -2 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="btn-pill px-10 py-4 text-lg text-[var(--color-text-mid)] border border-[var(--color-border)] bg-white"
+                    >
+                      {t("View Profile", "我的资料")}
+                    </motion.button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/test">
+                    <motion.button
+                      whileHover={{ scale: 1.04, y: -2 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="btn-pill px-10 py-4 text-lg text-white"
+                      style={{ backgroundColor: "var(--color-purple)" }}
+                    >
+                      {t("Take the Test", "开始测试")}
+                    </motion.button>
+                  </Link>
+                  <Link href="/login">
+                    <motion.button
+                      whileHover={{ scale: 1.04, y: -2 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="btn-pill px-10 py-4 text-lg text-[var(--color-text-mid)] border border-[var(--color-border)] bg-white"
+                    >
+                      {t("Sign In", "登录")}
+                    </motion.button>
+                  </Link>
+                </>
+              )}
+            </div>
+          )}
 
           <p className="text-[var(--color-text-muted)] text-sm mt-4">
             {t("Only 10 questions · Takes 2 minutes", "仅10个问题 · 2分钟完成")}
           </p>
         </motion.div>
       </section>
+
+      {/* Platform features */}
+      {!user && (
+        <section className="w-full max-w-4xl mx-auto px-6 pb-16">
+          <div className="grid md:grid-cols-3 gap-6">
+            {platformFeatures.map((feat, i) => (
+              <motion.div
+                key={feat.title}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.12 }}
+                className="bg-[var(--color-bg)] rounded-[var(--radius-lg)] p-6 border border-[var(--color-border-light)] shadow-[var(--shadow-sm)] text-center"
+              >
+                <div className="text-4xl mb-4">{feat.icon}</div>
+                <h3 className="font-[family-name:var(--font-display)] text-lg font-bold text-[var(--color-text)] mb-2">
+                  {t(feat.title, feat.titleZh)}
+                </h3>
+                <p className="text-[var(--color-text-dim)] text-sm leading-relaxed">
+                  {t(feat.desc, feat.descZh)}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* How it works */}
       <section className="w-full max-w-4xl mx-auto px-6 pb-24">
@@ -93,7 +183,7 @@ export default function HomePage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.12 }}
-              className="bg-white rounded-[var(--radius-lg)] p-6 border border-[var(--color-border-light)] shadow-[var(--shadow-sm)] text-center"
+              className="bg-[var(--color-bg)] rounded-[var(--radius-lg)] p-6 border border-[var(--color-border-light)] shadow-[var(--shadow-sm)] text-center"
             >
               <div className="text-4xl mb-4">{card.icon}</div>
               <div className="text-xs font-semibold text-[var(--color-text-muted)] uppercase tracking-wider mb-2">
@@ -126,7 +216,7 @@ export default function HomePage() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.08 }}
-                  className="bg-white rounded-[var(--radius-md)] p-4 text-center border border-[var(--color-border-light)] shadow-[var(--shadow-sm)]"
+                  className="bg-[var(--color-bg)] rounded-[var(--radius-md)] p-4 text-center border border-[var(--color-border-light)] shadow-[var(--shadow-sm)]"
                 >
                   <div
                     className="w-10 h-10 rounded-full mx-auto mb-3 flex items-center justify-center text-white font-bold text-sm"
@@ -146,7 +236,7 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="w-full py-8 text-center text-[var(--color-text-muted)] text-xs">
-        TypeQuest — {t("A personality test demo", "人格测试演示")}
+        TypeQuest — {t("Intimate Relationship Growth & Connection Ecosystem", "亲密关系成长与连接生态平台")}
       </footer>
     </main>
   );

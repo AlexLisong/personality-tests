@@ -3,8 +3,10 @@ import { Bricolage_Grotesque, Figtree } from "next/font/google";
 import "./globals.css";
 import { I18nProvider } from "@/lib/i18n";
 import { ThemeProvider } from "@/lib/theme";
+import { AuthProvider } from "@/lib/auth-context";
 import LangToggle from "@/components/LangToggle";
 import ThemeToggle from "@/components/ThemeToggle";
+import AppShell from "@/components/layout/AppShell";
 
 const bricolage = Bricolage_Grotesque({
   subsets: ["latin"],
@@ -28,9 +30,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-[family-name:var(--font-body)] antialiased">
         <ThemeProvider>
           <I18nProvider>
-            <LangToggle />
-            <ThemeToggle />
-            {children}
+            <AuthProvider>
+              <LangToggle />
+              <ThemeToggle />
+              <AppShell>{children}</AppShell>
+            </AuthProvider>
           </I18nProvider>
         </ThemeProvider>
       </body>
